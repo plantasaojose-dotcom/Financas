@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Finanças Pessoais</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#e8f2fb;
+  --surface:#f4f8fd;
+  --surface2:#ddeaf8;
+  --blue1:#1a4a80;
+  --blue2:#2a6aaa;
+  --blue3:#3a8ad0;
+  --blue-pale:#c8dff5;
+  --blue-paler:#ddeaf8;
+  --accent-green:#1a7060;
+  --accent-green-bg:#c8eee8;
+  --accent-red:#803050;
+  --accent-red-bg:#f0d8e8;
+  --border:rgba(30,80,160,0.12);
+  --border2:rgba(30,80,160,0.20);
+  --text:#0a1e38;
+  --muted:#3a5878;
+  --hint:#6a8aaa;
+  --font:'DM Sans',sans-serif;
+  --mono:'DM Mono',monospace;
+  --r:14px;--r-sm:9px;--r-pill:100px;
+  --shadow:0 2px 8px rgba(20,60,120,0.10);
+}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;font-size:15px;line-height:1.5}
+.app{max-width:480px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;background:var(--bg)}
+
+.header{padding:1.25rem 1.25rem 1rem;background:linear-gradient(150deg,#b8d4f0 0%,#c8e0f8 40%,#b0d0f0 100%)}
+.header h1{font-size:19px;font-weight:500;color:#0a1e38}
+.header-sub{font-size:12px;color:#2a4a70;margin-top:1px}
+.header-icon{width:38px;height:38px;border-radius:12px;background:rgba(255,255,255,0.5);display:flex;align-items:center;justify-content:center;font-size:19px;color:#1a4a80}
+.header-top{display:flex;align-items:center;justify-content:space-between}
+
+.nav{display:flex;overflow-x:auto;gap:3px;padding:0.5rem 0.875rem;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50;scrollbar-width:none}
+.nav::-webkit-scrollbar{display:none}
+.nav-btn{padding:6px 12px;border-radius:var(--r-pill);border:none;cursor:pointer;font-size:12.5px;font-weight:400;font-family:var(--font);background:transparent;color:var(--muted);transition:all 0.15s;white-space:nowrap;flex-shrink:0}
+.nav-btn.active{background:var(--blue-pale);color:var(--blue1);font-weight:500}
+
+.page{display:none;padding:1rem;flex-direction:column;gap:0.875rem;flex:1}
+.page.active{display:flex}
+
+.card{background:var(--surface);border-radius:var(--r);border:1px solid var(--border);padding:1rem 1.125rem}
+.card-title{font-size:11px;font-weight:500;color:var(--muted);margin-bottom:0.75rem;display:flex;align-items:center;gap:6px;text-transform:uppercase;letter-spacing:0.5px}
+
+.metric-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.metric{background:var(--surface2);border-radius:var(--r-sm);padding:0.75rem 0.875rem}
+.metric-label{font-size:11px;color:var(--muted);margin-bottom:2px}
+.metric-value{font-size:19px;font-weight:500;font-family:var(--mono);letter-spacing:-0.5px}
+.metric-sub{font-size:10px;color:var(--hint);margin-top:2px}
+.mv-blue1{color:var(--blue1)} .mv-blue2{color:var(--blue2)} .mv-green{color:var(--accent-green)} .mv-red{color:var(--accent-red)} .mv-blue3{color:var(--blue3)}
+
+.row-item{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)}
+.row-item:last-child{border-bottom:none}
+.row-left{display:flex;align-items:center;gap:10px;min-width:0}
+.row-icon{width:33px;height:33px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.row-name{font-size:13.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row-sub{display:flex;gap:4px;flex-wrap:wrap;margin-top:2px}
+.row-right{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.row-amount{font-size:13.5px;font-weight:500;font-family:var(--mono);white-space:nowrap}
+.ra-green{color:var(--accent-green)} .ra-red{color:var(--accent-red)} .ra-blue{color:var(--blue2)}
+
+.badge{display:inline-flex;align-items:center;padding:2px 7px;border-radius:var(--r-pill);font-size:10px;font-weight:500}
+.b-blue{background:#c8dff5;color:#0a3060}
+.b-green{background:var(--accent-green-bg);color:#0a4030}
+.b-red{background:var(--accent-red-bg);color:#501020}
+.b-sky{background:#c0dcf8;color:#0a2a60}
+.b-teal{background:#b8e0f0;color:#0a3050}
+.chip{display:inline-flex;padding:1px 7px;border-radius:var(--r-pill);font-size:10px;background:var(--surface2);border:1px solid var(--border);color:var(--muted)}
+
+.btn{border:none;border-radius:var(--r-sm);padding:8px 15px;font-size:12.5px;font-weight:500;font-family:var(--font);cursor:pointer;transition:opacity 0.15s,transform 0.1s;display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.btn:active{transform:scale(0.97)}
+.btn-primary{background:var(--blue-pale);color:var(--blue1)}
+.btn-confirm{background:#c8e8f8;color:#0a3050}
+.btn-green{background:var(--accent-green-bg);color:var(--accent-green)}
+.btn-edit{background:#ddeaf8;color:#1a3a70;padding:6px 9px;font-size:12px}
+.btn-del{background:var(--accent-red-bg);color:var(--accent-red);padding:6px 9px;font-size:12px}
+.btn-ghost{background:transparent;border:1px solid var(--border2);color:var(--muted)}
+.btn:hover{opacity:0.82}
+
+.section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.625rem}
+.section-head .card-title{margin:0}
+.month-sel{border-radius:var(--r-pill);padding:5px 11px;font-size:12px;border:1px solid var(--border);background:var(--surface2);color:var(--text);cursor:pointer;font-family:var(--font)}
+
+.empty{text-align:center;padding:2rem 1rem;color:var(--hint);font-size:13px}
+.empty i{font-size:26px;margin-bottom:6px;display:block;opacity:0.4}
+
+.chart-wrap{position:relative;height:175px;margin-top:8px}
+.legend-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:11.5px;color:var(--muted)}
+.legend-dot{width:9px;height:9px;border-radius:2px;flex-shrink:0}
+
+.donut-wrap{position:relative;height:150px;margin-bottom:6px}
+
+.acc-card{border-radius:var(--r-sm);padding:0.75rem 1rem;display:flex;align-items:center;gap:10px;margin-bottom:2px}
+.acc-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;background:rgba(255,255,255,0.5)}
+
+.total-bar{background:var(--blue-pale);border-radius:var(--r-sm);padding:0.875rem 1rem;display:flex;justify-content:space-between;align-items:center}
+
+.inv-summary{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:0.75rem}
+.inv-card{background:var(--surface2);border-radius:var(--r-sm);padding:0.75rem;text-align:center}
+.inv-card-label{font-size:10.5px;color:var(--muted);margin-bottom:3px}
+.inv-card-value{font-size:15px;font-weight:500;font-family:var(--mono)}
+
+.modal-overlay{position:fixed;inset:0;background:rgba(10,30,80,0.30);display:none;align-items:flex-end;justify-content:center;z-index:100;backdrop-filter:blur(2px)}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border-radius:var(--r) var(--r) 0 0;padding:1.25rem 1.25rem 2rem;width:100%;max-width:480px;max-height:88vh;overflow-y:auto;animation:slideUp 0.2s ease}
+@keyframes slideUp{from{transform:translateY(40px);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal-handle{width:36px;height:4px;background:var(--border2);border-radius:4px;margin:0 auto 1rem}
+.modal h3{font-size:15px;font-weight:500;margin-bottom:1rem;color:var(--text)}
+.modal-btns{display:flex;gap:8px;margin-top:1rem;justify-content:flex-end}
+
+.form-group{display:flex;flex-direction:column;gap:5px}
+.form-group label{font-size:11.5px;color:var(--muted);font-weight:500}
+.form-group input,.form-group select{border:1px solid var(--border2);border-radius:var(--r-sm);padding:9px 11px;font-size:14px;font-family:var(--font);background:var(--surface);color:var(--text);outline:none;width:100%;transition:border-color 0.15s}
+.form-group input:focus,.form-group select:focus{border-color:var(--blue2)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.form-stack{display:flex;flex-direction:column;gap:10px}
+
+.toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(20px);background:var(--blue1);color:#fff;padding:9px 18px;border-radius:var(--r-pill);font-size:13px;opacity:0;transition:all 0.25s;z-index:200;white-space:nowrap;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media(min-width:481px){
+  body{background:#c8d8f0}
+  .app{margin:1.5rem auto;border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow);min-height:auto}
+  .modal-overlay{align-items:center}
+  .modal{border-radius:var(--r);max-width:400px;padding:1.5rem}
+  .modal-handle{display:none}
+}
+</style>
+
+  <link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjogIkZpbmFuXHUwMGU3YXMgUGVzc29haXMiLCAic2hvcnRfbmFtZSI6ICJGaW5hblx1MDBlN2FzIiwgImRlc2NyaXB0aW9uIjogIkdlc3RcdTAwZTNvIGZpbmFuY2VpcmEgcGVzc29hbCIsICJzdGFydF91cmwiOiAiLiIsICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLCAiYmFja2dyb3VuZF9jb2xvciI6ICIjZThmMmZiIiwgInRoZW1lX2NvbG9yIjogIiNjOGRmZjUiLCAib3JpZW50YXRpb24iOiAicG9ydHJhaXQiLCAiaWNvbnMiOiBbeyJzcmMiOiAiZGF0YTppbWFnZS9wbmc7YmFzZTY0LGlWQk9SdzBLR2dvQUFBQU5TVWhFVWdBQUFNQUFBQURBQ0FZQUFBQlMzR3dIQUFBSVMwbEVRVlI0bk8yY1BZNGRSUlJHN3lBN21nVEpHL0NrckdCV3dBSllBaWtKc2tRNmdWTWs1SVNVSmJBQVZzQUtuRElic09TRXlBRUVWdGs5UGQzdjlVL2R1bi9ueE9aUlhmV2R1cmQ2dXZ0R1FJMi8vL24zdjE2L2RYOTNlOVBydCtBclRPcEplb2I4S01oeEhDWnVCeDdDdmhXazJBYVRkSUZJZ2I4R1FpekRwRXpJRlBocklNUm55azlDcGRDdlVWbUdzaGRPOEo5VFVZUlNGMHpvdDFORmhoSVhTZkNQazEyRTFCZEg4UHVSVllTVUYwWHc5Y2dtUXFxTElmamp5Q0pDaW9zZytIWkVGeUgwNEFtK0g2S0s4STMxQUk1QytIMFJkVDNDV1J0MW9pc1JxUnFFcWdDRVB3YVIxaW1FcVpFbUZKN2l2UnE0cndDRVB6YmUxOCsxbmQ0bmJ3dVBIejZkL28zWHIxNTJHSWt0WGl1QnkwRkZDMzZQa0I4bG1oemVSSEExR0pFWTRiY00vRFVpQ09GSkFqY0RFZkVkZnMraFg4T3pERjRrY0RFSUVaL2hqeGo2TlR6SzRFRUM4d0Y0QzM2bTBLL2hUUVpMRVV3RjhCVCtDc0dmNDBrRUt3bk1CUEFRL29xaFg4T0REQllTbUFoZ0hYNkN2NDYxQ0tNbEdDNkFaZmdKL25Zc1JSZ3B3ZEJISVFoL0hDem5hMlJPaHBsbUZYNkNmeDZyYWpDaUVnd1J3Q0w4Qkw4L0ZpSm9TNkRlQWhIK1BGak1xM1orM0Q4T3ZSZkNyMHUyK1ZVdEx5TjMvMndMRTRHUkxaRldLNlJXQVFoL2ZrYk91MWFlVkFRZy9IV0lMa0gzc2pJcS9BVGZINk5hb3A3dFVNaERNT0gzU2NSMTZTckFpTjAvNGlSWFlzVDY5TXhaTndFSVB6UWlTZEJGQU1JUGM2SklFT0lNUVBoakVtSGRUZ3VndmZ0SG1FUllSM3Y5enVidmxBQ0VIN2JnV1FLM0xSRGh6NFhYOVR3c2dPYnU3M1d5NEJ5YTYzbzBqNGNFc0g2bkYyQ0pJN2wwMXdLeCsrZkcyL3J1Rm9EV0I4N2lxUlZ5VXdFSWZ5MjhyUGN1QWVqOUlRSjdjdXFpQW5qWkRXQXNIdFo5c3dCYXU3K0hTUUE3dE5aL2ExNWZxUHpmTitJbC9HLy8rTXQ2Q0dZOC9QaTk5UkRrOGNNbnMyOFBiWHF6SnV2dVh6bjRjNnhGMEJMZzJ0dGpaZ0pZaHAvZ3IyTXBnb1lFMXdTNGVnYklkdWVIOEY4bTIveGN5Ni9KWFNDcjNUL2I0bXBoTlU4V3ViZ29RS2JXaC9Edkk1TUVsM0xzNHU4QUFGWU1GWURkUHhhWnFzQWFxd0prTy94Q2JkYnlQS3dDc1B2SEpIc1ZXQlNBM1I4eXNwUnJEc0ZRbWlFQ1dEL3lBREVaa1p0bkF0RCtRR2JtK1ZhdkFPeitjQWJ0L0hBR2dOSWdBSlRtaVFDOSszL2FIK2hCN3h4TmMwNEZnTktrRjhENlRhZm9aSjgvTlFGb2Y2QW5Xbm42SWtEVysvOXZIdDdKeDhmMzFzTUl5Y2ZIOS9MbTRaMzFNRlJvZVUvZkFnRmNRa1VBaiswUFZXQWZIdWRMSTFlbEtvREhSZlZJcFhrcUpZQklyY1U5UXJYNWVTR1M5d0M4Umx2a2IxOS9aendTUDFRTHZzam4zSGYvTktMSC9uOE5SSWdYL042ZlVUVDlOcWdYb29VQStsSHVEQUF3QlFHZ05BZ0FwZUVNTUpnL2YvL2w2ci81NGFkZkI0d0VSRVJlVkxzRmFzV1c0TS8vTFNMbzA3VUNSTG9GT29vOXdWLzdieEhoS1QxdmhYSUdVT1JNK0RWK0I1NkRBRXIwRGkwUzZJQUFDbWlGRlFuNmd3Q2QwUTRwRXZRRkFhQTBDTkNSVWJzelZhQWZDQUNsUVFBb0RRSkFhUkFBU29NQUhSbjF5QUtQUnZRREFhQTBDTkFaN2QyWjNiOHZDS0NBVmtnSmYzOFFRSW5lWVNYOE9pQ0FJcjFDUy9qMTZQcEN6T3RYTDNrcFprWUw3NUhIRndqK01sMi9DM1IvZDN2RGE1SDY3QkdCNEkrRGwrSUhRN2g5d1JrQVNvTUFVQm9FZ05JZ0FKU211d0E5YjFFQnpPbWRyMjlFUk83dmJtKzYvaXBBQU83dmJtOW9nYUEwQ0FDbFVSR0Fjd0Jvb0pFcktnQ1U1b3NBV1EvQ3Y3MzkyWG9Jb2NrNmZ5M3ZhaFdBTmdoNm9wV25FaTFRMWwxTW13cnpWa0lBZ0RXZUNORDdIT0NwRGFxd20vWEUwM3oxenRFMDU2VXFnS2RGOVV5bGVTb2xnRWl0eFQxQ3RmbDUxdkpvdkI3cDlUM2hOdy92cklmZ0JxL0IxMmlqcHkzUVlzL2ZXd0t2QWpRcWkrQTErQTNOL2w5a2tBQWkvaVVBZjJqdi9pSUZ6d0FBVXhZRnlQcFlCTlJtS2RmREtvQ252d21BZjBibFpWVUFxZ0JrWWkzUFE4OEFWQUhZd3NpY2NBaUcwbHdVUUtNTm9nckFKVWJjK3B4aVVnR1FBSmF3eU1WVkFUZ01RMlN1NWRmc0RFQVZnQ2xXZWRna0FGVUFJcklsdDZaM2dhZ0NJR0tiZzgwQ2FGVUJKS2lOMXZwdnphdUx2d01nUVUwOHJQc3VBVGdMUUFUMjVOUkZCUkR4c1J2QU9MeXM5MjRCTkt1QWwwa0JYVFRYZVc4KzNWU0FCaExreHR2NkhoS0Fzd0I0NUVndUQxY0FXaUhZaTZmV3ArR3VCV29nUVM2OHJ1Y3BBYlJiSWErVEJ2dlFYc2N6T1R4ZEFaQUFMdUU1L0NLT1c2QXBTQkNUQ092V1JZQVJkNFVpVENaOFpjUjY5Y2hkdHdxQUJOQ0lFbjZSemkwUUVrQ2s4SXNFT1FQTVFRS2ZSRndYbFIxYjQrTzZhL0RSWFh0R0JyOTNsNkZTQVVZK0toRngxOGxFNVBDTEtMWkFTSkNmNk9FWFVXcUJwb3hzaDBSb2lVWXdlc1BSM0V4REhvSXZRVFhRSmR2OHFndGc4ZWgwdGtYeWdzVzhhdWRuV0RoSHQwSU5XcUx6V0cwb0l6YlBvYnV6bFFRaWlIQUV5MG82cW5NWWVnYXdmSk9NdG1nZkZjSXZNcmdDTkN3cmdRalY0QkxXRzhYb1RkSnNSN2FXUUFRUnBsZ0hYOFNtUXpCOXVkMkRCSTJLTW5nSWZjT3FQVGIvdW9NbkNVUnFpT0FwK0NLMlowTnpBUnJlUkJESkpZTzMwSXY0K0x5TytRQ21lSlNnRVZFR2o2RnZlQWkvaURNQlJIeEwwUEFzZytmUU43eUVYOFNoQUNJeEpKaGlLVVNFd0UveEZINFJwd0kwb29td1JBODVvb1Y4Q1cvQmI3Z2MxSlFNRWxUSGEvaEZBandPN1hueTREcmUxOC8xNE9aUURlTGdQZmdOOXhWZ1NwUkpyVTZrZFFvejBEbFVBMzlFQ240alZBV1lFbkd5TXhOMVBVSU9lZzdWd0k2b3dXK0VIdndjUkJoSDlPQTNVbHpFSEVUUUkwdndHNmt1Wmc0aTlDTmI4QnNwTDJvT0lod25hL0FicVM5dURpSnNKM3Z3R3lVdWNnbGtlRTZWMEU4cGQ4RnpFS0ZtOEJ0bEwzeUpTakpVRHYwVUp1RUNtWVFnOE1zd0tUdUlKQVNCM3dhVGRCSVBVaEQyNC93UGtBWjNXT3laWGdnQUFBQUFTVVZPUks1Q1lJST0iLCAic2l6ZXMiOiAiMTkyeDE5MiIsICJ0eXBlIjogImltYWdlL3BuZyIsICJwdXJwb3NlIjogImFueSBtYXNrYWJsZSJ9LCB7InNyYyI6ICJkYXRhOmltYWdlL3BuZztiYXNlNjQsaVZCT1J3MEtHZ29BQUFBTlNVaEVVZ0FBQWdBQUFBSUFDQVlBQUFEMGVOVDZBQUFZd2tsRVFWUjRuTzNkUDQ1azEzVUg0RGZFTUpyRUFEY3drM29Gc3dJdFFFdHdxc1FRb0pTQlVnR0dFcVZlZ2hiZ0ZYQUZUamtiSU9DRUVZTngwR3gxOTNSVjlhdjM3cDl6ei9tKzNKN3FWL2VlMzY5T2RWUHZObUJwUC8zODY5ZFovL2JuVHgvZXpmcTNnWE5jWGdobVpxRDNwakJBSEM0akRKWTU0TTlTRUdBY2x3MDZFUEx0S1FmUWxnc0ZKd243ZVpRQ09NN2xnVHNJKy9pVUF0akhSWUVyaEgwZVNnRzg1bExBN3dSK0hRb0JLQUFVSnZCNXBCQlFrVU5QR1FLZnZSUUNLbkRJU1Uzb2M1WXlRRllPTnVrSWZYcFJCc2pFWVdaNUFwOVpGQUpXNXZDeUpLRlBOTW9BcTNGZ1dZcmdKenBGZ0ZVNHFJUW45Rm1WTWtCa0RpY2hDWDJ5VVFhSXhvRWtES0ZQRmNvQUVUaUVUQ2Y0cVVvUllDYUhqMmtFUHp4UUJKakJvV01vb1ErM0tRT000cUF4aE9DSCt5Z0M5T2FBMFpYZ2gzTVVBWHB4c0doTzZFTWZ5Z0F0T1V3MEkvaGhERVdBRmh3aVRoUDhNSWNpd0JrT0Q0Y0pmb2hCRWVBSWg0YTdDWDZJU1JIZ0hnNEx1d2wrV0lNaXdCNE9DVzhTL0xBbVJZQmJIQTZ1RXZ5UWd5TEFKUTRGcndoK3lFa1I0TG52WnI4QVloSCtrSmY3elhQYUlOdTJHUXhRalcwQURrQnhnaDlxVXdUcThzWVhKZmlCNXhTQmV2d09RRUhDSC9pV3VWQ1B4bGVJQ3c3c1lSdFFnemU1QU1FUEhLRUk1T1lyZ09TRVAzQ1UrWkdiZHBlVWl3dTBaQnVRancxQVFzSWZhTTFjeVVlalM4UUZCVWF3RGNqQkJpQUo0UStNWXQ3a29NVXR6a1VFWnJJTldKY053TUtFUHpDYk9iUXV6VzFCTGh3UWtXM0FXbXdBRmlQOGdhak1wN1VvQUF0eHVZRG96S2wxV05jc3dJVUNWdVFyZ2Roc0FJSVQvc0NxeksvWXRMUEFYQjcyK3ZMTGI4UC96WTgvZkQvODMyUk5OZ0V4ZVZNQ0V2dzhtaEhzclNrS1BGSUVZdkZtQkNQODY4a1E4a2NwQi9Vb0FYRjRJd0lSL3JsVkR2cDdLUWE1S1FFeGVCTUNFUHo1Q1B2MmxJSjhGSUc1UFB6SmhQLzZoUDA4U3NINmxJQjVQUGlKaFArYUJINWNDc0dhbElBNVBQUkpoUDlhaFA1NmxJRzFLQUhqZWVDRENmNDFDUHg4RklJMUtBTGplTkFEQ2YvWWhINGR5a0JzU3NBWUh2SWd3ajhtb1k4eUVKTVMwSjhIUElEd2owWG9jNDB5RUlzUzBKZUgyNW53ajBIb2N5OWxJQVlsb0I4UHRpUGhQNWZRcHhWbFlDNGxvQThQdFFQQlA1ZmdweGRGWUM1Rm9DMFBzekhoUDRmUVp6UmxZQTRsb0IwUHNpSGhQNTdnWnpaRllEd2xvQTBQc1JIaFA1YmdKeHBGWUN3bDREd1BzQUhoUDRiUVp4WEt3QmhLd0RrZTNrbkN2ei9CejZvVWdmNlVnT004dUJPRWYxK0NueXdVZ2I2VWdHTTh0SU9FZnorQ242d1VnWDZVZ1B0NVlBY0kvejRFUDFVb0FuMG9BZmZ4c080ay9Oc1QvRlNsQ0xTbkJPem5RZDFCK0xjbCtPR0JJdENXRXJDUGg3U1Q4RzlIOE1ObGlrQTdTc0RidnB2OUFsWWcvTnNSL25DZCs5R091ZjAyRGVrTkRsRWJCaHZjeHphZ0RadUE2enlZRzRUL2VZSWZ6bEVFemxNQ0x2TVZ3QlhDL3p6aEQrZTVSK2VaNTVkcFJSYzRMT2NZV05DSGJjQTVOZ0V2ZVJqZkVQN0hDWDRZUXhFNFRnbDQ0aXVBWjRUL2NjSWZ4bkhmampQbm4yaEN2M01vampHSVlDN2JnR05zQW13QXRtMFQva2NKZjVqUFBUekczTisyOTdOZkFPc3hjQ0NXeHp0cEc4QTl5bThBdE1EN0NIK0l5LzI4VC9YNVgvbzdrT3B2L2owTUZsaUxiY0IrVlg4Zm9Pd0dRUGp2Si94aFBlN3RmbFh6b0dRQnFQcG1IMkdJd0xyYzMvMHE1a0s1dFVmRk4va0lnd055OFpYQVBwVytEaWkxQVJEKyt3aC95TWU5M3FkU1RwUXFBTHpOa0lDODNHK2VLN1BxcU5UcWpqQVlvQlpmQ2R4VzRhdUFFaHNBNFgrYjhJZDYzUHZiS3VSRytnSlE0VTA4d3hDQXV0ei8yN0xuUitvVlIvWTM3d3dYSDNqT1Z3TFhaZjA2SVAwR2dOZUVQL0F0YzZHZXRBWEFwLy9MWEhMZ0d2UGhzcXg1a3JJQVpIMnp6bks1Z2JlWUU1ZGx6SlYwQlNEam05U0NTdzNzWlY1Y2xpMWYwaFVBWG5PWmdYdVpHL21sS2dEWjJsa0xMakZ3bFBueFdxYWNTZk9uRFpuZWxCWmNYS0FsZnliNFVvWS9EVXl4QVJEK0x3bC9vRFZ6NWFVTXVaT2lBUERFSlFWNk1WOXlXYjRBWkdoaHJiaWNRRy9tekpQVjgyZnBBckQ2dzIvSnBRUkdNVytlckp4RHl4YUFsUjk2YXk0ak1KcTU4MlRWUEZxMkFQREFKUVJtTVgvV3RtUUJXTFZ0dGVieUFiT1pRdzlXektYbENzQ0tEN2tIbHc2SXdqeDZzRm8rTFZjQWNObUFlTXlsOVN4VkFGWnJWejI0WkVCVTV0TmFPYlZNQVZqcG9mYmljZ0hSbVZQcjVOVXlCYUE2bHdwWWhYbTFoaVVLd0NwdHFoZVhDVmhOOWJtMVFtNkZMd0FyUE1TZXFsOGlZRjNWNTFmMC9BcGZBQUNBOWtJWGdPanRxYmZxN1JsWVgvVTVGam5Id2hhQXlBOXRoT3FYQnNpaitqeUxtbWRoQzBCbDFTOExrSSs1RmsvSUFoQzFMWTNna2dCWlZaNXZFWE10WkFHb3F2TGxBR293NStJSVZ3QWl0cVFSWEFxZ2lxcnpMbHEraFNvQTBSN09LRlV2QTFCWDFia1hLZWRDRlFBQVlJd3dCU0JTS3hxcGFnc0dxRHIvb3VSZG1BSlFVZFhERC9ESUhKd25SQUdJMG9aR2N1Z0JIbFNjaHhGeUwwUUJBQURHbWw0QUlyU2cwU3EyWFlCYktzN0YyZmszdFFETS91Rm5xSGpJQWZhb09COW41dUQwRFVBbEZRODN3RDNNeVhHbUZZQ0tuLzRCNEZ1ejh0QUdZQkN0Rm1BZjgzS01LUVdnMnFkL2h4bmdQdFhtNW94Y3RBSG9yTm9oQm1qRi9PeHJlQUdvOXVrZkFQWVluWTgyQUIxcHJ3RG5tS1A5REMwQWxUNzlPN1FBYlZTYXB5TnowZ1lBQUFwNk4rb2Y4dW1mSHY3NjMvOHoreVZRM0kvLzhZZlpMNkdNano5OFAvc2xEUFA1MDRmdSthd0FOQ2I4K3hMNFJLY1E5RldsQktRcEFGWENmOXNVZ0I2RVBxdFNCdHFyVWdDMnJYOEpVQUFhRXY1dENYNnlVQVRhcWxJQ2xpOEF3cDk3Q1g2eVVnVGFVUUxPODFjQWhDTDh5Y3o1SnBLdUd3Q2YvdG5MWUtRYTI0RHpiQUhPc1FGZ091RlBSYzQ5c3lrQUovbjBmNDRoU0dYTy96bm03em5kQ2tDRjliL0RkNDdoQis3QldSWG1jSzg4dFFGZ0NrTVBucmdQek5DbEFQajB6eTJHSGJ6bVhoeFhZUjczeUZVYkFJWXk1T0E2OTRPUm1oY0FuLzY1eG5DRHQ3a254MVNZeTYzejFRYmdUaFVPR2NDS3pPZjdLQUFNNFZNTjdPZStNRUxUQXBCOS9hOWRIbU9Zd2YzY20yT3l6K21XT1dzREFBQUZOU3NBUHYxemlVOHhjSno3YzB6MmVkMHFiMjBBQUtDZ0pnWEFwMzh1OGVrRnpuT1Bqc2srdDF2a3JnMEFBQlNrQUx3aGU0c0V5TXI4dnUxMEFjaSsvdWNZYTB0b3gzM2lrclA1YXdOd2cvWUlzRFp6L0RvRkFBQUtPbFVBTXEvL3RVYUFIRExQOHpNNWJBTkFjNzZ2aFBiY0sxcFRBQzdJM0JZQktqTFhYenRjQURLdi93RmdGVWZ6MkFZQUFBbzZWQUF5Zi9xM0pnTElLZk44UDVMTE5nQUFVSkFDOEV6bWRnaUFPZi9jM1FVZzgvb2ZBRloxYno3YkFQeE9Ld1Nvd2J4L29BQUFRRUVLQUFBVWRGY0J5UHI5djNVUVFDMVo1LzQ5T1cwREFBQUZsUzhBV1ZzZ0FMZFZuLys3QzBEVzlUOEFaTEkzcjh0dkFBQ2dvdElGb1ByNkI2QzZ5am13cXdCWS93UEFPdmJrZHVrTkFBQlVWYllBVkY3NzlQYmpmL3hoOWt1QWROeXJmcXJtUWRrQ0FBQ1Z2VmtBZlA4UEFPdDVLNzlMYmdDcXJuc0F1S3hpTHBRc0FQVG4rMHBveDMyaUJ3VUFBQXE2V1FBeWZ2OWZjYzBEd05zeTVzT3RITGNCb0p2LysvSy9zMThDTE04OW9oY0ZBQUFLS2xVQU1xNTNvdnJ6ajMvZnRzMm5GempqOGY0ODNpZjZxNVFUVnd0QXh1Ly9BYUNhYTNsZWFnUEFITFlBY0QvM2h0NFVBSVl3ekdBLzk0VVJ5aFNBU3QvcnpPYjdTbWpQdlJxblNsNlVLUURNNTFNTnZNMDlZWlNMQmNBdkFOS0w0UWJYdVIvMGNpblhTMndBcXF4elZtSEl3V3Z1UlN3VmNxTkVBU0Fld3c2ZXVBL01vQUF3amFFSDdnSHpLQUJNWmZoUm1mUFBUSzhLUUxaZkFLendQYzdxREVFcWN1N2p5NVlmMytiNysxa3ZCSjU3SEliLzl2SGZKNzhTNkV2d0U0V3ZBQWpGY0NRejU1dEliQUFJeHphQWJBUS9FU2tBaEtVSXNEckJUMlF2Q29CZkFDU2k1ME5VR1NBNm9aL0xsMTkrMno3KzhQM3NsOUhNVHovLyt2WHpwdy92dHMwR2dNVjhPMXdWQW1ZVCtLeEtBV0JwaGkvQU1mNEtBQUFLVWdBQW9LQzBCY0F2QUFMUVF0WThTVnNBQUlEci9sVUFzdjBKSUFEdzJtUGUyd0FBUUVFS0FBQVVwQUFBUUVFcEMwRFczOWdFWUk2TXVaS3lBQUFBdHlrQUFGQ1FBZ0FBQmIzZk52OE5BTWp1bi8vNHk5My9OMy84MDk4NnZCSWdncDkrL3ZXci96VkFTT1pJMk8vOS82TVVRQjRLQUNUUUt2VHYrWGVVQVZoYnVnS1E4VTgxNEpKUm9iL24zMWNHcU9ETEw3OXRIMy80ZnZiTGFDWmRBWURzWmdmL0pZK3ZTUkdBZFNnQXNJaUl3Zjh0UlFEVzRjOEFZUUVyaFA5enE3MWVxTWdHQUFKYk9VaHRBeUEyR3dBSWF1WHdmeTdMendIWktBQVFVTGJRelBielFBWUtBQVNUTlN5ei9seXdLZ1VBQXNrZWt0bC9QbGpKZC81M0FDQ0dLdUZZNWVlRTZGSnRBUHhYQUZsVnRWQ3M5dk9TUjZhY1NWVUFZRVZWdzdEcXp3MVJLQUFBVUpBQ0FCTlYveFJjL2VlSG1SUUFtRVQ0UGZBY1lBNEZBQUFLVWdBQW9DQUZBQ2F3OW43Sjg0RHhGQUFBS0VnQkFJQ0NGQUFZekxyN01zOEZ4bElBQUtBZ0JRQUFDbElBQUtBZ0JRQUFDbElBQUtBZ0JRQUFDbElBQUtBZ0JRQUFDbElBWUxBLy91bHZzMTlDU0o0TGpLVUFBRUJCQ2dBQUZLUUF3QVRXM1M5NUhqQ2VBZ0FBQlNrQUFGQ1FBZ0NUV0hzLzhCeGdEZ1VBSnFvZWZ0Vi9mcGhKQVFDQWdoUUFtS3pxcCtDcVB6ZEVrYW9BZlB6aCs5a3ZBUTZwRm9iVmZsN3l5SlF6MzMzKzlPSGQ3QmNCMUFuRktqOG5SSmRxQXdDcnl4Nk8yWDgrV0lrQ0FNRmtEY21zUHhlc1NnR0FnTEtGWmJhZkJ6SlFBQ0NvTEtHWjVlZUFiTjdQZmdIQWRZL2grYzkvL0dYeUs3bWY0SWZZYkFCZ0FhdUY2V3F2RnlxeUFZQkZyTEFORVB5d0RnVUFGaE94Q0FoK1dFKzZBdkR4aCsrM0w3LzhOdnRsUUhmUFEzZEdHUkQ2VkpQcHZ3SzRiUWtMQUZRMHFnd0lmY2hEQVlCa0xvWDBrVklnN0NHMzk5dTJiWjgvZlhqMzA4Ky9mcDM5WW9BK2hEbnczT2RQSDk3NU0wQUFLRWdCQUlDQ0ZBQUFLQ2hsQWNqMnB4b0F6SlV4VjFJV0FBRGdOZ1VBQUFwU0FBQ2dvSDhWZ00rZlByeWIrVUlBZ1A0ZTg5NEdBQUFLU2xzQU12N0dKZ0RqWmMyVHRBVUFBTGhPQVFDQWdoUUFBQ2hJQVFDQWdsNFVnR3gvQ3BqMUZ6Y0FHQ05iamp6UGVSc0FBQ2hJQVFDQWdoUUFBQ2hJQVFDQWdsNFZBTDhJQ0FENTh1UGJmTGNCQUlDQ0ZBQUFLRWdCQUlDQ1NoU0FiTi9qQU5CWGhkeTRXQUN5L1NJZ0FGUjJLZGRMYkFBQWdKZktGSUFLNjV3by91dXYvem43SlVBNjd0VTRWZktpVEFFQUFKNG9BQUJRME5VQzRCY0JBV0I5MS9LODFBYWd5dmM2RWZpK0V0cHhuOGFwbEJPbENnQUE4RUFCQUlDQ2JoYUFqTDhIVUdtOU01dTFKWnpuSG8yVE1SOXU1YmdOQUFBVXBBRFFsVTh2Y0p6N1EwOGxDMERHTlE4QXgxWE1oVGNMUU1iZkEyQXNuMkxnZnU0Tlo3MlYzeVUzQUl4bm1NRis3Z3NqbEMwQUZkYzlBTHhXTlEvS0ZnREc4NmtHM3VhZU1NcXVBdUQzQUdqRmNJUHIzQTlhMlpQYnBUY0FWZGMrc3hseThKcDdNVWZsSENoZEFKakhzSU1uN2dNejdDNEF2Z2FnTlVNUDNBUGEyNXZYNVRjQWxkYy9FUmgrVk9iOHoxVjkvcGN2QU14bkNGS1JjODlzZDYvMWYvcjUxNjg5WHNoc1gzNzViZlpMWU51MlAvLzQ5OWt2QWJvUy9ERmsvZlIvejlmMU5nQ0VZamlTbWZOTkpEWUF2N01CaU1jMmdDd0VmencyQUFyQUMwcEFUSW9BcXhMOE1XVU4vMjNyWEFDMkxXOEpVQURpVXdhSVR1akhsN1VBM1B2bitnckFONVNBdFNnRXpDYncxNUkxL0xkTkFUaE5BUURJU3dGNGN1aXZBREwvVndFekh3NkF5akxQOXlPNTdNOEFBYUNnd3dVZzh4WUFBRlp4Tkk5dEFDN0l2Q1lDcU1oY2YwMEJBSUNDVGhXQXpGOERhSXNBT1dTZTUyZHkyQVlBQUFwU0FHN0kzQm9CS2pESHJ6dGRBREovRFFBQVVaM05YeHVBTjJpUEFHc3l2MjlUQUFDZ29DWUZJUHZYQUZva3dGcXl6KzBXdVdzREFBQUZOU3NBdGdBQVJKQjlYcmZLV3hzQUFDaW9hUUd3QlFCZ3B1eHp1bVhPMmdBQVFFRUt3SjJ5dDB1QVZablA5MmxlQUxKL0RiQnREaGxBTkJYbWN1dDh0UUVBZ0lLNkZBQmJBQUJHcVRDUGUrU3FEUUFBRk5TdEFOZ0NBTkJiaFRuY0swOXRBRTZxY1BnQUlqSi96MUVBQUtDZ3JnV2d3dGNBMjZhRkFveFdaZTcyekZFYkFBQW9xSHNCc0FVQW9LVXE4N1ozZnRvQU5GVGxVQUxNWXM2Mk02UUFWTmtDQUVBTEkzTFRCcUF4N1JTZ0QvTzFyV0VGb05JV3dDRUZhS3ZTWEIyVmx6WUFBRkRRMEFKZ0N3REF2U3JOMDVFNWFRUFFVYVZEQzlDRE9kclA4QUpRYVFzQUFIdU56a2NiZ002MFY0Qmp6TSsrcGhTQWFsc0FoeGpnUHRYbTVveGN0QUVZcE5waEJqakt2QnhqV2dHb3RnVUFnRXRtNWFFTndFQmFMY0J0NXVRNFV3dEF4UzJBd3cxd1djWDVPRE1IcDI4QWxBQUFLczdGMmZrM3ZRQUFBT09GS0FDelc5QU1GZHN1d0NVVjUyR0UzQXRSQUtxcWVPZ0Juak1INXdsVEFDSzBvUmtjZnFDcXF2TXZTdDZGS1FBQXdEaWhDa0NVVmpSYTFSWU0xRlYxN2tYS3VWQUZZTnRpUFp5UnFsNEdvSjZxOHk1YXZvVXJBSlZWdlJSQUhlWmNIQ0VMUUxTV05KTExBV1JWZWI1RnpMV1FCYUM2eXBjRXlNbGNpeWRzQVlqWWxrWnlXWUFzcXMrenFIa1d0Z0JzVzl5SE5rcjFTd09zci9vY2k1eGpvUXNBQU5CSCtBSVF1VDJOVUwwOUErdXFQcitpNTFmNEFyQnQ4UjlpYjlVdkViQ2U2bk5yaGR4YW9nRGdNZ0hyTUsvV3NFd0JXS0ZOOWVaU0FkR1pVK3ZrMVRJRllOdldlYWc5dVZ4QVZPYlRXam0xVkFIZ2dVc0dSR011cldlNUFyQlN1K3JKWlFPaU1JOGVySlpQeXhXQWJWdnZJZmZpMGdHem1VTVBWc3lsSlFzQVQxdytZQmJ6WjIzTEZvQVYyMVl2TGlFd21ybnpaTlU4V3JZQWJOdTZENzBIbHhFWXhieDVzbklPTFYwQXRtM3RoOSthU3duMFpzNDhXVDEvbGk4QXZPUnlBcjJZTDdta0tBQ3J0N0RXWEZLZ05YUGxwUXk1cy93UDhOeFBQLy82ZGZacmlPYkxMNy9OZmduQXdnVC9heG5DZjl1U2JBQWVaWGxUV25KNWdhUE1qOWN5NVV5cUFzQmxMakZ3TDNNanYzUUZJRk03YThsbEJ2WXlMeTdMbGkvcENzQzI1WHVUV25HcGdiZVlFNWRsekpXVUJXRGJjcjVaTGJqY3dEWG13MlZaOHlSdEFlQTZseHo0bHJsUVQ4cFc4NXcvRGJ6Tm53bENiWUwvdHF5Zi9yZXR3QVlnODV2WGdzc1BkYm4vdDJYUGovUUZZTnZ5djRsbkdRSlFqM3QvVzRYY1NQOERQdWZyZ0xmNVNnQnlFL3h2cXhEKzIxWmtBOEIraGdQazVYN3pYS2tDVUtYVm5XVklRRDd1OVQ2VmNxTE1EL3FjcndMMjg1VUFyRTN3NzFjcC9MZXQyQWJnVWJVMytRekRBOWJsL3U1WE1SZEtGb0J0cS9sbUgyV0l3SHJjMi8ycTVrSEpIL281WHdmY3gxY0NFSnZndjAvVjhOKzJ3aHVBUjVYZi9DTU1GNGpML2J4UDlmbi9mdllMWUQyUFE4WTJBR0lRL0J4UmZnT3diVnJnVVlZT3pPY2VIbVB1K3gyQUYvdyt3SEcyQVRDVzREOU8rRCt3QVhqR29Uak9NSUp4M0xmanpQa25Ic1FGTmdIbjJBWkFINEwvSE9IL2tvZHhoUkp3bmlJQWJRais4NFQvYTc0Q3VNSmhPYy9RZ3ZQY28vUE04OHM4bERmWUJMUmhHd0QzRWZ4dENQL3JQSmdkbElCMkZBRzRUZkMzSS94djh4WEFEZzVSTzRZYlhPZCt0R051djgwRHVvTk5RRnUyQWZCQThMY2wvUGZ4a082a0JMU25DRkNWNEc5UCtPL25RUjJnQlBTaENGQ0Y0TzlEK04vSHd6cElDZWhIRVNBcndkK1A4TCtmQjNhQ0V0Q1hJa0FXZ3I4djRYK01oM2FTRXRDZklzQ3FCSDkvd3Y4NEQ2NEJKV0FNUllCVkNQNHhoUDg1SGw0alNzQll5Z0RSQ1AyeGhQOTVIbUJEU3NCNGlnQ3pDZjd4aEg4YkhtSmpTc0FjaWdDakNmNDVoSDg3SG1RSFNzQmN5Z0M5Q1AyNWhIOWJIbVpIaXNCY2lnQ3RDUDY1Qkg4ZkhtcG5Ta0FNeWdEM0V2b3hDUDkrUE5nQmxJQllsQUd1RWZxeENQKytQTnhCbElDWWxBR0Vma3pDdno4UGVDQWxJRFpsb0E2aEg1dndIOE5ESGt3SldJTXlrSS9RWDRQd0g4ZURua1FSV0l0Q3NCNkJ2eGJCUDU0SFBwRVNzQ1psSUM2aHZ5YmhQNGVIUHBrU3NENkZZQjZCdno3aFA0OEhINEFTa0k5UzBKNnd6MGY0eitYaEI2SUk1S1lVN0Nmc2N4UDhNWGdUZ2xFQzZxbGNEQVI5UGNJL0RtOUVRRW9BanpLVUF5SFBJK0VmaXpjak1FV0F2V1lVQmNIT1hvSS9KbTlLY0VvQXNETGhIOWQzczE4QXQ3azh3S3JNcjlpOE9RdXhEUUJXSVBqWFlBT3dFSmNLaU02Y1dvY0NzQmlYQzRqS2ZGcUxOMnRodmhJQUloRDhhN0lCV0poTEI4eG1EcTNMRzVlRWJRQXdrdUJmbncxQUVpNGpNSXA1azRNM01TSGJBS0FId1orTERVQkNMaW5RbXJtU2p6YzBPZHNBNEF6Qm41Y05RSEl1TDNDVStaR2JON2NRMndCZ0Q4RmZnemU1SUVVQXVFVHcxK0lyZ0lKY2N1QmI1a0k5M3ZEaWJBT2dOc0ZmbHplZWJkc1VBYWhHOE9NQThJSWlBTGtKZmg3NUhRQmVNQndnTC9lYjV4d0dycklOZ0J3RVA1YzRGTHhKRVlBMUNYNXVjVGpZVFJHQU5RaCs5bkJJdUpzaUFERUpmdTdoc0hDWUlnQXhDSDZPY0dnNFRSR0FPUVEvWnpnOE5LTUl3QmlDbnhZY0lwcFRCS0FQd1U5TERoTmRLUU53anRDbkZ3ZUxJUlFCdUkvZ3B6Y0hqS0VVQWJoTjhET0tnOFkweWdBOEVQck00TkF4blNKQVZZS2ZtUncrd2xBRXFFTHdFNEZEU0VqS0FOa0lmYUp4SUFsUEdXQlZRcC9JSEU2V29nd1FuZEJuRlE0cVMxSUVpRWJ3c3hvSGx1VXBBOHdpOUZtWncwczZDZ0c5Q0h3eWNaaEpUUm5nTEtGUFZnNDJaU2dEN0NYMHFjQWhweXlGZ0VjQ240b2NldmlkUWxDSHdBY0ZBSzVTQ1BJUStQQ2FTd0YzVUFyaUUvYXdqNHNDSnlrRjh3aDdPTTdsZ1E2VWd2YUVQYlRsUXNGZ3lzRjFRaDdHY2RrZ21Nd0ZRY0JESFA4UGRVTVA1cTRZUUpJQUFBQUFTVVZPUks1Q1lJST0iLCAic2l6ZXMiOiAiNTEyeDUxMiIsICJ0eXBlIjogImltYWdlL3BuZyIsICJwdXJwb3NlIjogImFueSBtYXNrYWJsZSJ9XX0=">
+  <meta name="theme-color" content="#c8dff5">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Finanças">
+  <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAYAAABS3GwHAAAIS0lEQVR4nO2cPY4dRRRG7yA7mgTJG/CkrGBWwAJYAikJskQ6gVMk5ISUJbAAVsAKnDIbsOSEyAEEVtk9Pd3v9U/dun/nxOZRXfWdurd6uvtGQI2///n3v16/dX93e9Prt+ArTOpJeob8KMhxHCZuBx7CvhWk2AaTdIFIgb8GQizDpEzIFPhrIMRnyk9CpdCvUVmGshdO8J9TUYRSF0zot1NFhhIXSfCPk12E1BdH8PuRVYSUF0Xw9cgmQqqLIfjjyCJCiosg+HZEFyH04Am+H6KK8I31AI5C+H0RdT3CWRt1oisRqRqEqgCEPwaR1imEqZEmFJ7ivRq4rwCEPzbe18+1nd4nbwuPHz6d/o3Xr152GIktXiuBy0FFC36PkB8lmhzeRHA1GJEY4bcM/DUiCOFJAjcDEfEdfs+hX8OzDF4kcDEIEZ/hjxj6NTzK4EEC8wF4C36m0K/hTQZLEUwF8BT+CsGf40kEKwnMBPAQ/oqhX8ODDBYSmAhgHX6Cv461CKMlGC6AZfgJ/nYsRRgpwdBHIQh/HCzna2ROhplmFX6Cfx6rajCiEgwRwCL8BL8/FiJoS6DeAhH+PFjMq3Z+3D8OvRfCr0u2+VUtLyN3/2wLE4GRLZFWK6RWAQh/fkbOu1aeVAQg/HWILkH3sjIq/ATfH6Naop7tUMhDMOH3ScR16SrAiN0/4iRXYsT69MxZNwEIPzQiSdBFAMIPc6JIEOIMQPhjEmHdTgugvftHmERYR3v9zubvlACEH7bgWQK3LRDhz4XX9TwsgObu73Wy4Bya63o0j4cEsH6nF2CJI7l01wKx++fG2/ruFoDWB87iqRVyUwEIfy28rPcuAej9IQJ7cuqiAnjZDWAsHtZ9swBau7+HSQA7tNZ/a15fqPzfN+Il/G//+Mt6CGY8/Pi99RDk8cMns28PbXqzJuvuXzn4c6xF0BLg2ttjZgJYhp/gr2MpgoYE1wS4egbIdueH8F8m2/xcy6/JXSCr3T/b4mphNU8WubgoQKbWh/DvI5MEl3Ls4u8AAFYMFYDdPxaZqsAaqwJkO/xCbdbyPKwCsPvHJHsVWBSA3R8yspRrDsFQmiECWD/yADEZkZtnAtD+QGbm+VavAOz+cAbt/HAGgNIgAJTmiQC9+3/aH+hB7xxNc04FgNKkF8D6TafoZJ8/NQFof6AnWnn6IkDW+/9vHt7Jx8f31sMIycfH9/Lm4Z31MFRoeU/fAgFcQkUAj+0PVWAfHudLI1elKoDHRfVIpXkqJYBIrcU9QrX5eSGS9wC8Rlvkb19/ZzwSP1QLvsjn3Hf/NKLH/n8NRIgX/N6fUTT9NqgXooUA+lHuDAAwBQGgNAgApeEMMJg/f//l6r/54adfB4wEREReVLsFasWW4M//LSLo07UCRLoFOoo9wV/7bxHhKT1vhXIGUORM+DV+B56DAEr0Di0S6IAACmiFFQn6gwCd0Q4pEvQFAaA0CNCRUbszVaAfCAClQQAoDQJAaRAASoMAHRn1yAKPRvQDAaA0CNAZ7d2Z3b8vCKCAVkgJf38QQIneYSX8OiCAIr1CS/j16PpCzOtXL3kpZkYL75HHFwj+Ml2/C3R/d3vDa5H67BGB4I+Dl+IHQ7h9wRkASoMAUBoEgNIgAJSmuwA9b1EBzOmdr29ERO7vbm+6/ipAAO7vbm9ogaA0CAClURGAcwBooJErKgCU5osAWQ/Cv7392XoIock6fy3vahWANgh6opWnEi1Q1l1MmwrzVkIAgDWeCND7HOCpDaqwm/XE03z1ztE056UqgKdF9UyleSolgEitxT1Ctfl51vJovB7p9T3hNw/vrIfgBq/B12ijpy3QYs/fWwKvAjQqi+A1+A3N/l9kkAAi/iUAf2jv/iIFzwAAUxYFyPpYBNRmKdfDKoCnvwmAf0blZVUAqgBkYi3PQ88AVAHYwsiccAiG0lwUQKMNogrAJUbc+pxiUgGQAJawyMVVATgMQ2Su5dfsDEAVgClWedgkAFUAIrIlt6Z3gagCIGKbg80CaFUBJKiN1vpvzauLvwMgQU08rPsuATgLQAT25NRFBRDxsRvAOLys924BNKuAl0kBXTTXeW8+3VSABhLkxtv6HhKAswB45EguD1cAWiHYi6fWp+GuBWogQS68rucpAbRbIa+TBvvQXsczOTxdAZAALuE5/CKOW6ApSBCTCOvWRYARd4UiTCZ8ZcR69chdtwqABNCIEn6Rzi0QEkCk8IsEOQPMQQKfRFwXlR1b4+O6a/DRXXtGBr93l6FSAUY+KhFx18lE5PCLKLZASJCf6OEXUWqBpoxsh0RoiUYwesPR3ExDHoIvQTXQJdv8qgtg8eh0tkXygsW8audnWDhHt0INWqLzWG0oIzbPobuzlQQiiHAEy0o6qnMYegawfJOMtmgfFcIvMrgCNCwrgQjV4BLWG8XoTdJsR7aWQAQRplgHX8SmQzB9ud2DBI2KMngIfcOqPTb/uoMnCURqiOAp+CK2Z0NzARreRBDJJYO30Iv4+LyO+QCmeJSgEVEGj6FveAi/iDMBRHxL0PAsg+fQN7yEX8ShACIxJJhiKUSEwE/xFH4RpwI0oomwRA85ooV8CW/Bb7gc1JQMElTHa/hFAjwO7Xny4Dre18/14OZQDeLgPfgN9xVgSpRJrU6kdQoz0DlUA39ECn4jVAWYEnGyMxN1PUIOeg7VwI6owW+EHvwcRBhH9OA3UlzEHETQI0vwG6kuZg4i9CNb8BspL2oOIhwna/AbqS9uDiJsJ3vwGyUucglkeE6V0E8pd8FzEKFm8BtlL3yJSjJUDv0UJuECmYQg8MswKTuIJASB3waTdBIPUhD24/wPkAZ3WOyZXggAAAAASUVORK5CYII=">
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="header-top">
+      <div>
+        <h1><i class="ti ti-wallet" style="margin-right:5px;font-size:17px"></i>Finanças Pessoais</h1>
+        <div class="header-sub" id="header-sub">a carregar...</div>
+      </div>
+      <div class="header-icon"><i class="ti ti-chart-pie-2"></i></div>
+    </div>
+  </div>
+
+  <nav class="nav">
+    <button class="nav-btn active" onclick="showPage('dashboard')"><i class="ti ti-layout-dashboard"></i> Painel</button>
+    <button class="nav-btn" onclick="showPage('accounts')"><i class="ti ti-building-bank"></i> Contas</button>
+    <button class="nav-btn" onclick="showPage('expenses')"><i class="ti ti-arrow-down-circle"></i> Saídas</button>
+    <button class="nav-btn" onclick="showPage('income')"><i class="ti ti-arrow-up-circle"></i> Entradas</button>
+    <button class="nav-btn" onclick="showPage('investments')"><i class="ti ti-trending-up"></i> Invest.</button>
+  </nav>
+
+  <!-- PAINEL -->
+  <main class="page active" id="page-dashboard">
+    <div class="metric-grid" id="metric-grid"></div>
+    <div class="card">
+      <div class="section-head">
+        <span class="card-title"><i class="ti ti-chart-bar"></i> Balanço mensal</span>
+        <select class="month-sel" id="month-sel" onchange="renderDashboard()">
+          <option value="0">Janeiro</option><option value="1">Fevereiro</option><option value="2">Março</option>
+          <option value="3">Abril</option><option value="4" selected>Maio</option><option value="5">Junho</option>
+          <option value="6">Julho</option><option value="7">Agosto</option><option value="8">Setembro</option>
+          <option value="9">Outubro</option><option value="10">Novembro</option><option value="11">Dezembro</option>
+        </select>
+      </div>
+      <div class="chart-wrap"><canvas id="balanceChart"></canvas></div>
+      <div class="legend-row">
+        <span class="legend-item"><span class="legend-dot" style="background:#5a9ad8"></span>Entradas</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#a080c8"></span>Saídas</span>
+      </div>
+    </div>
+  </main>
+
+  <!-- CONTAS -->
+  <main class="page" id="page-accounts">
+    <div class="card">
+      <div class="section-head">
+        <span class="card-title"><i class="ti ti-building-bank"></i> As minhas contas</span>
+        <button class="btn btn-primary" onclick="openModal('modal-account')"><i class="ti ti-plus"></i> Nova</button>
+      </div>
+      <div id="accounts-list" style="display:flex;flex-direction:column;gap:8px"></div>
+    </div>
+    <div class="total-bar">
+      <span style="font-size:12px;color:var(--blue1);font-weight:500"><i class="ti ti-coins" style="margin-right:4px"></i>Saldo total em contas</span>
+      <span id="total-balance" style="font-size:17px;font-weight:500;color:var(--blue1);font-family:var(--mono)">0,00 €</span>
+    </div>
+  </main>
+
+  <!-- SAÍDAS -->
+  <main class="page" id="page-expenses">
+    <div class="card">
+      <div class="section-head">
+        <span class="card-title"><i class="ti ti-calendar-repeat"></i> Despesas fixas</span>
+        <button class="btn btn-primary" onclick="openModal('modal-fixed-exp')"><i class="ti ti-plus"></i> Nova</button>
+      </div>
+      <div id="fixed-expenses-list"></div>
+    </div>
+    <div class="card">
+      <div class="section-head">
+        <span class="card-title"><i class="ti ti-receipt"></i> Despesas variáveis</span>
+        <button class="btn btn-confirm" onclick="openModal('modal-var-exp')"><i class="ti ti-plus"></i> Adicionar</button>
+      </div>
+      <div id="var-expenses-list"></div>
+    </div>
+  </main>
+
+  <!-- ENTRADAS -->
+  <main class="page" id="page-income">
+    <div class="card">
+      <div class="section-head">
+        <span class="card-title"><i class="ti ti-calendar-repeat"></i> Entradas fixas</span>
+        <button class="btn btn-green" onclick="openModal('modal-fixed-inc')"><i class="ti ti-plus"></i> Nova</button>
+      </div>
+      <div id="fixed-income-list"></div>
+    </div>
+    <div class="card">
+      <div class="section-head">
+        <span class="card-title"><i class="ti ti-coins"></i> Entradas extras</span>
+        <button class="btn btn-confirm" onclick="openModal('modal-var-inc')"><i class="ti ti-plus"></i> Adicionar</button>
+      </div>
+      <div id="var-income-list"></div>
+    </div>
+  </main>
+
+  <!-- INVESTIMENTOS -->
+  <main class="page" id="page-investments">
+    <div class="card">
+      <div class="card-title"><i class="ti ti-chart-donut"></i> Carteira total</div>
+      <div class="donut-wrap"><canvas id="donutChart"></canvas></div>
+      <div class="legend-row" id="inv-legend" style="justify-content:center"></div>
+      <div class="inv-summary" id="inv-summary" style="margin-top:10px"></div>
+    </div>
+    <div class="card">
+      <div class="section-head">
+        <span class="card-title"><i class="ti ti-shield-check"></i> PPR</span>
+        <button class="btn btn-confirm" onclick="openModal('modal-ppr')"><i class="ti ti-plus"></i> Adicionar</button>
+      </div>
+      <div id="ppr-list"></div>
+    </div>
+    <div class="card">
+      <div class="section-head">
+        <span class="card-title"><i class="ti ti-trending-up"></i> Outros investimentos</span>
+        <button class="btn btn-primary" onclick="openModal('modal-inv')"><i class="ti ti-plus"></i> Adicionar</button>
+      </div>
+      <div id="inv-list"></div>
+    </div>
+  </main>
+</div>
+
+<!-- MODAIS -->
+<div class="modal-overlay" id="modal-account">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h3 id="modal-account-title"><i class="ti ti-building-bank" style="margin-right:6px"></i>Nova conta bancária</h3>
+    <div class="form-stack">
+      <div class="form-group"><label>Nome da conta</label><input id="acc-name" placeholder="ex: Conta Caixa Geral"></div>
+      <div class="form-group"><label>Banco</label><input id="acc-bank" placeholder="ex: CGD, BPI, Santander"></div>
+      <div class="form-group"><label>Saldo atual (€)</label><input id="acc-balance" type="number" step="0.01" inputmode="decimal" placeholder="0.00"></div>
+      <div class="form-group"><label>Tipo</label><select id="acc-type"><option value="checking">Conta à ordem</option><option value="savings">Poupança</option></select></div>
+    </div>
+    <div class="modal-btns">
+      <button class="btn btn-ghost" onclick="cancelModal('modal-account')">Cancelar</button>
+      <button class="btn btn-primary" id="btn-account-save" onclick="addAccount()"><i class="ti ti-check"></i> Adicionar</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-fixed-exp">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h3 id="modal-fexp-title"><i class="ti ti-calendar-repeat" style="margin-right:6px"></i>Despesa fixa mensal</h3>
+    <div class="form-stack">
+      <div class="form-group"><label>Descrição</label><input id="fexp-name" placeholder="ex: Renda, Netflix, Ginásio"></div>
+      <div class="form-row">
+        <div class="form-group"><label>Valor (€)</label><input id="fexp-amount" type="number" step="0.01" inputmode="decimal" placeholder="0.00"></div>
+        <div class="form-group"><label>Dia do mês</label><input id="fexp-day" type="number" min="1" max="31" inputmode="numeric" placeholder="ex: 5"></div>
+      </div>
+      <div class="form-group"><label>Categoria</label>
+        <select id="fexp-cat"><option>🏠 Habitação</option><option>🛒 Alimentação</option><option>🚗 Transportes</option><option>📱 Subscrições</option><option>🏥 Saúde</option><option>📚 Educação</option><option>💡 Utilities</option><option>🎯 Outro</option></select>
+      </div>
+    </div>
+    <div class="modal-btns">
+      <button class="btn btn-ghost" onclick="cancelModal('modal-fixed-exp')">Cancelar</button>
+      <button class="btn btn-primary" id="btn-fexp-save" onclick="addFixedExpense()"><i class="ti ti-check"></i> Guardar</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-var-exp">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h3 id="modal-vexp-title"><i class="ti ti-receipt" style="margin-right:6px"></i>Despesa variável</h3>
+    <div class="form-stack">
+      <div class="form-group"><label>Descrição</label><input id="vexp-name" placeholder="ex: Supermercado, Restaurante"></div>
+      <div class="form-row">
+        <div class="form-group"><label>Valor (€)</label><input id="vexp-amount" type="number" step="0.01" inputmode="decimal" placeholder="0.00"></div>
+        <div class="form-group"><label>Mês</label>
+          <select id="vexp-month"><option value="0">Jan</option><option value="1">Fev</option><option value="2">Mar</option><option value="3">Abr</option><option value="4" selected>Mai</option><option value="5">Jun</option><option value="6">Jul</option><option value="7">Ago</option><option value="8">Set</option><option value="9">Out</option><option value="10">Nov</option><option value="11">Dez</option></select>
+        </div>
+      </div>
+      <div class="form-group"><label>Categoria</label>
+        <select id="vexp-cat"><option>🛒 Alimentação</option><option>🚗 Transportes</option><option>👗 Vestuário</option><option>🎬 Lazer</option><option>🏥 Saúde</option><option>🎯 Outro</option></select>
+      </div>
+    </div>
+    <div class="modal-btns">
+      <button class="btn btn-ghost" onclick="cancelModal('modal-var-exp')">Cancelar</button>
+      <button class="btn btn-confirm" id="btn-vexp-save" onclick="addVarExpense()"><i class="ti ti-check"></i> Registar</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-fixed-inc">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h3 id="modal-finc-title"><i class="ti ti-calendar-repeat" style="margin-right:6px"></i>Entrada fixa mensal</h3>
+    <div class="form-stack">
+      <div class="form-group"><label>Descrição</label><input id="finc-name" placeholder="ex: Salário, Renda recebida"></div>
+      <div class="form-row">
+        <div class="form-group"><label>Valor (€)</label><input id="finc-amount" type="number" step="0.01" inputmode="decimal" placeholder="0.00"></div>
+        <div class="form-group"><label>Dia do mês</label><input id="finc-day" type="number" min="1" max="31" inputmode="numeric" placeholder="ex: 25"></div>
+      </div>
+      <div class="form-group"><label>Categoria</label>
+        <select id="finc-cat"><option>💼 Salário</option><option>🏠 Renda</option><option>📈 Investimentos</option><option>🎯 Outro</option></select>
+      </div>
+    </div>
+    <div class="modal-btns">
+      <button class="btn btn-ghost" onclick="cancelModal('modal-fixed-inc')">Cancelar</button>
+      <button class="btn btn-green" id="btn-finc-save" onclick="addFixedIncome()"><i class="ti ti-check"></i> Guardar</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-var-inc">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h3 id="modal-vinc-title"><i class="ti ti-coins" style="margin-right:6px"></i>Entrada extra</h3>
+    <div class="form-stack">
+      <div class="form-group"><label>Descrição</label><input id="vinc-name" placeholder="ex: Freelance, Venda"></div>
+      <div class="form-row">
+        <div class="form-group"><label>Valor (€)</label><input id="vinc-amount" type="number" step="0.01" inputmode="decimal" placeholder="0.00"></div>
+        <div class="form-group"><label>Mês</label>
+          <select id="vinc-month"><option value="0">Jan</option><option value="1">Fev</option><option value="2">Mar</option><option value="3">Abr</option><option value="4" selected>Mai</option><option value="5">Jun</option><option value="6">Jul</option><option value="7">Ago</option><option value="8">Set</option><option value="9">Out</option><option value="10">Nov</option><option value="11">Dez</option></select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-btns">
+      <button class="btn btn-ghost" onclick="cancelModal('modal-var-inc')">Cancelar</button>
+      <button class="btn btn-confirm" id="btn-vinc-save" onclick="addVarIncome()"><i class="ti ti-check"></i> Registar</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-ppr">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h3 id="modal-ppr-title"><i class="ti ti-shield-check" style="margin-right:6px"></i>Registo de PPR</h3>
+    <div class="form-stack">
+      <div class="form-group"><label>Nome / entidade</label><input id="ppr-name" placeholder="ex: PPR Fidelidade, NB PPR"></div>
+      <div class="form-group"><label>Valor atual (€)</label><input id="ppr-value" type="number" step="0.01" inputmode="decimal" placeholder="0.00"></div>
+      <div class="form-group"><label>Contribuição mensal (€)</label><input id="ppr-monthly" type="number" step="0.01" inputmode="decimal" placeholder="opcional"></div>
+      <div class="form-row">
+        <div class="form-group"><label>Ano de início</label><input id="ppr-year" type="number" inputmode="numeric" placeholder="ex: 2020"></div>
+        <div class="form-group"><label>Tipo</label><select id="ppr-type"><option value="ppr-fundo">PPR Fundo</option><option value="ppr-seguro">PPR Seguro</option></select></div>
+      </div>
+    </div>
+    <div class="modal-btns">
+      <button class="btn btn-ghost" onclick="cancelModal('modal-ppr')">Cancelar</button>
+      <button class="btn btn-confirm" id="btn-ppr-save" onclick="addPPR()"><i class="ti ti-check"></i> Guardar</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-inv">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h3 id="modal-inv-title"><i class="ti ti-trending-up" style="margin-right:6px"></i>Novo investimento</h3>
+    <div class="form-stack">
+      <div class="form-group"><label>Nome / descrição</label><input id="inv-name" placeholder="ex: ETF S&P500, Ações NOS"></div>
+      <div class="form-row">
+        <div class="form-group"><label>Valor atual (€)</label><input id="inv-value" type="number" step="0.01" inputmode="decimal" placeholder="0.00"></div>
+        <div class="form-group"><label>Custo base (€)</label><input id="inv-cost" type="number" step="0.01" inputmode="decimal" placeholder="0.00"></div>
+      </div>
+      <div class="form-group"><label>Tipo</label>
+        <select id="inv-type"><option value="etf">ETF / Fundo índice</option><option value="acoes">Ações</option><option value="obrigacoes">Obrigações</option><option value="cripto">Criptomoeda</option><option value="outro">Outro</option></select>
+      </div>
+      <div class="form-group"><label>Plataforma</label><input id="inv-platform" placeholder="ex: DEGIRO, Trading212, BPI"></div>
+    </div>
+    <div class="modal-btns">
+      <button class="btn btn-ghost" onclick="cancelModal('modal-inv')">Cancelar</button>
+      <button class="btn btn-primary" id="btn-inv-save" onclick="addInvestment()"><i class="ti ti-check"></i> Guardar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const STORAGE_KEY = 'fp_data_v2';
+const defaultState = {accounts:[],fixedExpenses:[],varExpenses:[],fixedIncome:[],varIncome:[],pprs:[],investments:[],nextId:1};
+function loadState(){try{const r=localStorage.getItem(STORAGE_KEY);if(r)return Object.assign({},defaultState,JSON.parse(r));}catch(e){}return Object.assign({},defaultState);}
+function saveState(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state));}catch(e){}}
+let state=loadState();
+
+const fmt=v=>(+v).toLocaleString('pt-PT',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';
+const MONTHS=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+const MONTHS_FULL=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const ACC_COLORS=[{bg:'#b8d8f5',text:'#0a2a58'},{bg:'#a8ccf0',text:'#091e50'},{bg:'#c0daf8',text:'#0a3060'},{bg:'#b0d0f0',text:'#082858'},{bg:'#c8e0f8',text:'#0a3468'},{bg:'#a0c8ee',text:'#081c4a'}];
+const INV_TYPE_LABEL={etf:'ETF / Fundo',acoes:'Ações',obrigacoes:'Obrigações',cripto:'Cripto',outro:'Outro','ppr-fundo':'PPR Fundo','ppr-seguro':'PPR Seguro'};
+const ACC_TYPE_LABEL={checking:'À ordem',savings:'Poupança'};
+const DONUT_COLORS=['#7ab0e8','#4a88d0','#9ac8f0','#3a70b8','#b0d8f8','#2a58a0'];
+
+function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2200);}
+function getMonthIncome(m){return state.fixedIncome.reduce((s,i)=>s+i.amount,0)+state.varIncome.filter(i=>i.month===m).reduce((s,i)=>s+i.amount,0);}
+function getMonthExpenses(m){return state.fixedExpenses.reduce((s,e)=>s+e.amount,0)+state.varExpenses.filter(e=>e.month===m).reduce((s,e)=>s+e.amount,0);}
+
+// NAV
+function showPage(p){
+  document.querySelectorAll('.page').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(el=>el.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  const idx=['dashboard','accounts','expenses','income','investments'].indexOf(p);
+  document.querySelectorAll('.nav-btn')[idx].classList.add('active');
+  const fns={dashboard:renderDashboard,accounts:renderAccounts,expenses:renderExpenses,income:renderIncomePage,investments:renderInvestments};
+  if(fns[p])fns[p]();
+}
+
+// MODAIS
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+function cancelModal(id){resetEditState();closeModal(id);}
+document.querySelectorAll('.modal-overlay').forEach(el=>{
+  el.addEventListener('click',e=>{if(e.target===el){resetEditState();el.classList.remove('open');}});
+});
+
+// HEADER
+const now=new Date();
+document.getElementById('header-sub').textContent=MONTHS_FULL[now.getMonth()]+' '+now.getFullYear()+' · gestão simplificada';
+
+// DASHBOARD
+let chartInst=null;
+function renderDashboard(){
+  const m=parseInt(document.getElementById('month-sel').value);
+  const totalBal=state.accounts.reduce((s,a)=>s+a.balance,0);
+  const totalInv=state.pprs.reduce((s,p)=>s+p.value,0)+state.investments.reduce((s,i)=>s+i.value,0);
+  const inc=getMonthIncome(m);const exp=getMonthExpenses(m);const net=inc-exp;
+  document.getElementById('metric-grid').innerHTML=`
+    <div class="metric"><div class="metric-label">Saldo bancário</div><div class="metric-value mv-blue1">${fmt(totalBal)}</div><div class="metric-sub">${state.accounts.length} conta(s)</div></div>
+    <div class="metric"><div class="metric-label">Carteira invest.</div><div class="metric-value mv-blue2">${fmt(totalInv)}</div><div class="metric-sub">PPR + outros</div></div>
+    <div class="metric"><div class="metric-label">Entradas ${MONTHS[m]}</div><div class="metric-value mv-green">${fmt(inc)}</div><div class="metric-sub">fixas + extras</div></div>
+    <div class="metric"><div class="metric-label">Saídas ${MONTHS[m]}</div><div class="metric-value mv-red">${fmt(exp)}</div><div class="metric-sub">fixas + variáveis</div></div>
+    <div class="metric" style="grid-column:1/-1"><div class="metric-label">Balanço ${MONTHS[m]}</div><div class="metric-value ${net>=0?'mv-green':'mv-red'}">${net>=0?'+':''}${fmt(net)}</div><div class="metric-sub">${net>=0?'superávit 🟢':'défice 🔴'}</div></div>
+  `;
+  const incData=MONTHS.map((_,i)=>+getMonthIncome(i).toFixed(2));
+  const expData=MONTHS.map((_,i)=>+getMonthExpenses(i).toFixed(2));
+  if(chartInst)chartInst.destroy();
+  chartInst=new Chart(document.getElementById('balanceChart'),{
+    type:'bar',
+    data:{labels:MONTHS,datasets:[
+      {label:'Entradas',data:incData,backgroundColor:'rgba(90,154,216,0.75)',borderColor:'#3a7ab8',borderWidth:1,borderRadius:5,borderSkipped:false},
+      {label:'Saídas',data:expData,backgroundColor:'rgba(160,128,200,0.75)',borderColor:'#8050a8',borderWidth:1,borderRadius:5,borderSkipped:false}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+      scales:{x:{grid:{display:false},ticks:{font:{size:10},autoSkip:false,maxRotation:0}},
+              y:{grid:{color:'rgba(30,80,160,0.06)'},ticks:{callback:v=>v+'€',font:{size:10}}}}}
+  });
+}
+
+// CONTAS
+function renderAccounts(){
+  const list=document.getElementById('accounts-list');
+  if(!state.accounts.length){list.innerHTML='<div class="empty"><i class="ti ti-building-bank"></i>Sem contas. Adicione a primeira.</div>';
+  }else{
+    list.innerHTML=state.accounts.map((a,i)=>{
+      const c=ACC_COLORS[i%ACC_COLORS.length];
+      return`<div class="acc-card" style="background:${c.bg}">
+        <div class="acc-icon" style="color:${c.text}"><i class="ti ti-building-bank"></i></div>
+        <div style="flex:1;min-width:0"><div style="font-weight:500;font-size:13.5px;color:${c.text}">${a.name}</div><div style="font-size:11px;color:${c.text};opacity:0.75">${a.bank||''} · ${ACC_TYPE_LABEL[a.type]||a.type}</div></div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div style="font-weight:500;font-size:14px;color:${c.text};font-family:var(--mono)">${fmt(a.balance)}</div>
+          <button class="btn btn-edit" onclick="openEdit('account',${a.id})"><i class="ti ti-edit"></i></button>
+          <button class="btn btn-del" onclick="removeAccount(${a.id})"><i class="ti ti-trash"></i></button>
+        </div>
+      </div>`;}).join('');}
+  document.getElementById('total-balance').textContent=fmt(state.accounts.reduce((s,a)=>s+a.balance,0));
+}
+function addAccount(){
+  const name=document.getElementById('acc-name').value.trim();
+  const bank=document.getElementById('acc-bank').value.trim();
+  const balance=parseFloat(document.getElementById('acc-balance').value)||0;
+  const type=document.getElementById('acc-type').value;
+  if(!name){toast('Insira o nome da conta');return;}
+  state.accounts.push({id:state.nextId++,name,bank,balance,type});
+  saveState();closeModal('modal-account');
+  ['acc-name','acc-bank','acc-balance'].forEach(id=>document.getElementById(id).value='');
+  renderAccounts();toast('Conta adicionada ✓');
+}
+function removeAccount(id){state.accounts=state.accounts.filter(a=>a.id!==id);saveState();renderAccounts();toast('Conta removida');}
+
+// SAÍDAS
+function renderExpenses(){
+  const fl=document.getElementById('fixed-expenses-list');
+  fl.innerHTML=state.fixedExpenses.length?state.fixedExpenses.map(e=>`
+    <div class="row-item">
+      <div class="row-left"><div class="row-icon" style="background:#f0d8e8">${e.cat.split(' ')[0]}</div>
+        <div style="min-width:0"><div class="row-name">${e.name}</div><div class="row-sub"><span class="badge b-blue">dia ${e.day}</span><span class="chip">${e.cat.split(' ').slice(1).join(' ')}</span></div></div></div>
+      <div class="row-right"><div class="row-amount ra-red">-${fmt(e.amount)}</div>
+        <button class="btn btn-edit" onclick="openEdit('fixed-exp',${e.id})"><i class="ti ti-edit"></i></button>
+        <button class="btn btn-del" onclick="removeFixedExp(${e.id})"><i class="ti ti-trash"></i></button></div>
+    </div>`).join(''):'<div class="empty"><i class="ti ti-calendar-off"></i>Sem despesas fixas</div>';
+  const vl=document.getElementById('var-expenses-list');
+  vl.innerHTML=state.varExpenses.length?state.varExpenses.map(e=>`
+    <div class="row-item">
+      <div class="row-left"><div class="row-icon" style="background:#ddeaf8">${e.cat.split(' ')[0]}</div>
+        <div style="min-width:0"><div class="row-name">${e.name}</div><div class="row-sub"><span class="chip">${MONTHS[e.month]}</span><span class="chip">${e.cat.split(' ').slice(1).join(' ')}</span></div></div></div>
+      <div class="row-right"><div class="row-amount ra-red">-${fmt(e.amount)}</div>
+        <button class="btn btn-edit" onclick="openEdit('var-exp',${e.id})"><i class="ti ti-edit"></i></button>
+        <button class="btn btn-del" onclick="removeVarExp(${e.id})"><i class="ti ti-trash"></i></button></div>
+    </div>`).join(''):'<div class="empty"><i class="ti ti-receipt-off"></i>Sem despesas variáveis</div>';
+}
+function addFixedExpense(){
+  const name=document.getElementById('fexp-name').value.trim();
+  const amount=parseFloat(document.getElementById('fexp-amount').value)||0;
+  const cat=document.getElementById('fexp-cat').value;
+  const day=parseInt(document.getElementById('fexp-day').value)||1;
+  if(!name||!amount){toast('Preencha descrição e valor');return;}
+  state.fixedExpenses.push({id:state.nextId++,name,amount,cat,day});
+  saveState();closeModal('modal-fixed-exp');
+  document.getElementById('fexp-name').value='';document.getElementById('fexp-amount').value='';document.getElementById('fexp-day').value='';
+  renderExpenses();toast('Despesa fixa guardada ✓');
+}
+function addVarExpense(){
+  const name=document.getElementById('vexp-name').value.trim();
+  const amount=parseFloat(document.getElementById('vexp-amount').value)||0;
+  const month=parseInt(document.getElementById('vexp-month').value);
+  const cat=document.getElementById('vexp-cat').value;
+  if(!name||!amount){toast('Preencha descrição e valor');return;}
+  state.varExpenses.push({id:state.nextId++,name,amount,month,cat});
+  saveState();closeModal('modal-var-exp');
+  document.getElementById('vexp-name').value='';document.getElementById('vexp-amount').value='';
+  renderExpenses();toast('Despesa registada ✓');
+}
+function removeFixedExp(id){state.fixedExpenses=state.fixedExpenses.filter(e=>e.id!==id);saveState();renderExpenses();toast('Removida');}
+function removeVarExp(id){state.varExpenses=state.varExpenses.filter(e=>e.id!==id);saveState();renderExpenses();toast('Removida');}
+
+// ENTRADAS
+function renderIncomePage(){
+  const fl=document.getElementById('fixed-income-list');
+  fl.innerHTML=state.fixedIncome.length?state.fixedIncome.map(i=>`
+    <div class="row-item">
+      <div class="row-left"><div class="row-icon" style="background:#c8eee8">${i.cat.split(' ')[0]}</div>
+        <div style="min-width:0"><div class="row-name">${i.name}</div><div class="row-sub"><span class="badge b-blue">dia ${i.day}</span><span class="chip">${i.cat.split(' ').slice(1).join(' ')}</span></div></div></div>
+      <div class="row-right"><div class="row-amount ra-green">+${fmt(i.amount)}</div>
+        <button class="btn btn-edit" onclick="openEdit('fixed-inc',${i.id})"><i class="ti ti-edit"></i></button>
+        <button class="btn btn-del" onclick="removeFixedInc(${i.id})"><i class="ti ti-trash"></i></button></div>
+    </div>`).join(''):'<div class="empty"><i class="ti ti-calendar-off"></i>Sem entradas fixas</div>';
+  const vl=document.getElementById('var-income-list');
+  vl.innerHTML=state.varIncome.length?state.varIncome.map(i=>`
+    <div class="row-item">
+      <div class="row-left"><div class="row-icon" style="background:#c8dff5"><i class="ti ti-coins" style="color:#1a4a80;font-size:15px"></i></div>
+        <div style="min-width:0"><div class="row-name">${i.name}</div><div class="row-sub"><span class="chip">${MONTHS[i.month]}</span></div></div></div>
+      <div class="row-right"><div class="row-amount ra-green">+${fmt(i.amount)}</div>
+        <button class="btn btn-edit" onclick="openEdit('var-inc',${i.id})"><i class="ti ti-edit"></i></button>
+        <button class="btn btn-del" onclick="removeVarInc(${i.id})"><i class="ti ti-trash"></i></button></div>
+    </div>`).join(''):'<div class="empty"><i class="ti ti-coin-off"></i>Sem entradas extras</div>';
+}
+function addFixedIncome(){
+  const name=document.getElementById('finc-name').value.trim();
+  const amount=parseFloat(document.getElementById('finc-amount').value)||0;
+  const day=parseInt(document.getElementById('finc-day').value)||25;
+  const cat=document.getElementById('finc-cat').value;
+  if(!name||!amount){toast('Preencha descrição e valor');return;}
+  state.fixedIncome.push({id:state.nextId++,name,amount,cat,day});
+  saveState();closeModal('modal-fixed-inc');
+  document.getElementById('finc-name').value='';document.getElementById('finc-amount').value='';document.getElementById('finc-day').value='';
+  renderIncomePage();toast('Entrada fixa guardada ✓');
+}
+function addVarIncome(){
+  const name=document.getElementById('vinc-name').value.trim();
+  const amount=parseFloat(document.getElementById('vinc-amount').value)||0;
+  const month=parseInt(document.getElementById('vinc-month').value);
+  if(!name||!amount){toast('Preencha descrição e valor');return;}
+  state.varIncome.push({id:state.nextId++,name,amount,month});
+  saveState();closeModal('modal-var-inc');
+  document.getElementById('vinc-name').value='';document.getElementById('vinc-amount').value='';
+  renderIncomePage();toast('Entrada registada ✓');
+}
+function removeFixedInc(id){state.fixedIncome=state.fixedIncome.filter(i=>i.id!==id);saveState();renderIncomePage();toast('Removida');}
+function removeVarInc(id){state.varIncome=state.varIncome.filter(i=>i.id!==id);saveState();renderIncomePage();toast('Removida');}
+
+// INVESTIMENTOS
+let donutInst=null;
+function renderInvestments(){
+  const totalPPR=state.pprs.reduce((s,p)=>s+p.value,0);
+  const totalInv=state.investments.reduce((s,i)=>s+i.value,0);
+  const totalCost=state.investments.reduce((s,i)=>s+(i.cost||0),0);
+  const totalVal=totalPPR+totalInv;
+  const gain=totalInv-totalCost;
+  const gainPct=totalCost>0?(gain/totalCost*100):0;
+  document.getElementById('inv-summary').innerHTML=`
+    <div class="inv-card"><div class="inv-card-label">Total carteira</div><div class="inv-card-value mv-blue1">${fmt(totalVal)}</div></div>
+    <div class="inv-card"><div class="inv-card-label">PPR</div><div class="inv-card-value mv-blue2">${fmt(totalPPR)}</div></div>
+    <div class="inv-card"><div class="inv-card-label">Outros invest.</div><div class="inv-card-value mv-blue3">${fmt(totalInv)}</div></div>
+    <div class="inv-card"><div class="inv-card-label">Mais/menos-valia</div><div class="inv-card-value ${gain>=0?'mv-green':'mv-red'}">${gain>=0?'+':''}${fmt(gain)} <span style="font-size:11px">(${gainPct>=0?'+':''}${gainPct.toFixed(1)}%)</span></div></div>
+  `;
+  const dd=[],dl=[],dc=[];
+  if(totalPPR>0){dd.push(+totalPPR.toFixed(2));dl.push('PPR');dc.push(DONUT_COLORS[0]);}
+  const byType={};state.investments.forEach(i=>{byType[i.type]=(byType[i.type]||0)+i.value;});
+  let ci=1;Object.entries(byType).forEach(([t,v])=>{dd.push(+v.toFixed(2));dl.push(INV_TYPE_LABEL[t]||t);dc.push(DONUT_COLORS[ci++%DONUT_COLORS.length]);});
+  if(donutInst)donutInst.destroy();
+  if(dd.length){
+    donutInst=new Chart(document.getElementById('donutChart'),{type:'doughnut',data:{labels:dl,datasets:[{data:dd,backgroundColor:dc,borderWidth:2,borderColor:'#f4f8fd'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},cutout:'65%'}});
+    const total=dd.reduce((s,v)=>s+v,0);
+    document.getElementById('inv-legend').innerHTML=dl.map((l,i)=>`<span class="legend-item"><span class="legend-dot" style="background:${dc[i]}"></span>${l} ${total>0?((dd[i]/total*100).toFixed(0))+'%':''}</span>`).join('');
+  }else{document.getElementById('inv-legend').innerHTML='<span style="font-size:12px;color:var(--hint)">Sem dados ainda</span>';}
+  document.getElementById('ppr-list').innerHTML=state.pprs.length?state.pprs.map(p=>`
+    <div class="row-item">
+      <div class="row-left"><div class="row-icon" style="background:#c8dff5"><i class="ti ti-shield-check" style="color:#1a4a80;font-size:15px"></i></div>
+        <div style="min-width:0"><div class="row-name">${p.name}</div><div class="row-sub"><span class="badge b-sky">${INV_TYPE_LABEL[p.type]}</span>${p.year?`<span class="chip">desde ${p.year}</span>`:''} ${p.monthly?`<span class="chip">+${fmt(p.monthly)}/mês</span>`:''}</div></div></div>
+      <div class="row-right"><div class="row-amount mv-blue2">${fmt(p.value)}</div>
+        <button class="btn btn-edit" onclick="openEdit('ppr',${p.id})"><i class="ti ti-edit"></i></button>
+        <button class="btn btn-del" onclick="removePPR(${p.id})"><i class="ti ti-trash"></i></button></div>
+    </div>`).join(''):'<div class="empty"><i class="ti ti-shield-off"></i>Sem PPR registados</div>';
+  document.getElementById('inv-list').innerHTML=state.investments.length?state.investments.map(i=>{
+    const g=i.value-(i.cost||0);const gp=i.cost>0?(g/i.cost*100):0;
+    return`<div class="row-item">
+      <div class="row-left"><div class="row-icon" style="background:#c8dff5"><i class="ti ti-trending-up" style="color:#1a4a80;font-size:15px"></i></div>
+        <div style="min-width:0"><div class="row-name">${i.name}</div><div class="row-sub"><span class="badge b-teal">${INV_TYPE_LABEL[i.type]}</span>${i.platform?`<span class="chip">${i.platform}</span>`:''} ${i.cost?`<span class="chip" style="color:${g>=0?'var(--accent-green)':'var(--accent-red)'}">${g>=0?'+':''}${gp.toFixed(1)}%</span>`:''}</div></div></div>
+      <div class="row-right"><div class="row-amount mv-blue3">${fmt(i.value)}</div>
+        <button class="btn btn-edit" onclick="openEdit('inv',${i.id})"><i class="ti ti-edit"></i></button>
+        <button class="btn btn-del" onclick="removeInv(${i.id})"><i class="ti ti-trash"></i></button></div>
+    </div>`;}).join(''):'<div class="empty"><i class="ti ti-chart-off"></i>Sem investimentos registados</div>';
+}
+function addPPR(){
+  const name=document.getElementById('ppr-name').value.trim();
+  const value=parseFloat(document.getElementById('ppr-value').value)||0;
+  const monthly=parseFloat(document.getElementById('ppr-monthly').value)||0;
+  const year=parseInt(document.getElementById('ppr-year').value)||null;
+  const type=document.getElementById('ppr-type').value;
+  if(!name||!value){toast('Preencha nome e valor');return;}
+  state.pprs.push({id:state.nextId++,name,value,monthly,year,type});
+  saveState();closeModal('modal-ppr');
+  ['ppr-name','ppr-value','ppr-monthly','ppr-year'].forEach(id=>document.getElementById(id).value='');
+  renderInvestments();toast('PPR guardado ✓');
+}
+function addInvestment(){
+  const name=document.getElementById('inv-name').value.trim();
+  const value=parseFloat(document.getElementById('inv-value').value)||0;
+  const cost=parseFloat(document.getElementById('inv-cost').value)||0;
+  const type=document.getElementById('inv-type').value;
+  const platform=document.getElementById('inv-platform').value.trim();
+  if(!name||!value){toast('Preencha nome e valor');return;}
+  state.investments.push({id:state.nextId++,name,value,cost,type,platform});
+  saveState();closeModal('modal-inv');
+  ['inv-name','inv-value','inv-cost','inv-platform'].forEach(id=>document.getElementById(id).value='');
+  renderInvestments();toast('Investimento guardado ✓');
+}
+function removePPR(id){state.pprs=state.pprs.filter(p=>p.id!==id);saveState();renderInvestments();toast('Removido');}
+function removeInv(id){state.investments=state.investments.filter(i=>i.id!==id);saveState();renderInvestments();toast('Removido');}
+
+// EDIÇÃO
+let editingId=null,editingType=null;
+function resetEditState(){
+  editingId=null;editingType=null;
+  const titles={
+    'modal-account-title':'<i class="ti ti-building-bank" style="margin-right:6px"></i>Nova conta bancária',
+    'modal-fexp-title':'<i class="ti ti-calendar-repeat" style="margin-right:6px"></i>Despesa fixa mensal',
+    'modal-vexp-title':'<i class="ti ti-receipt" style="margin-right:6px"></i>Despesa variável',
+    'modal-finc-title':'<i class="ti ti-calendar-repeat" style="margin-right:6px"></i>Entrada fixa mensal',
+    'modal-vinc-title':'<i class="ti ti-coins" style="margin-right:6px"></i>Entrada extra',
+    'modal-ppr-title':'<i class="ti ti-shield-check" style="margin-right:6px"></i>Registo de PPR',
+    'modal-inv-title':'<i class="ti ti-trending-up" style="margin-right:6px"></i>Novo investimento'
+  };
+  Object.entries(titles).forEach(([id,html])=>{const el=document.getElementById(id);if(el)el.innerHTML=html;});
+  const saves={
+    'btn-account-save':{label:'<i class="ti ti-check"></i> Adicionar',fn:addAccount},
+    'btn-fexp-save':{label:'<i class="ti ti-check"></i> Guardar',fn:addFixedExpense},
+    'btn-vexp-save':{label:'<i class="ti ti-check"></i> Registar',fn:addVarExpense},
+    'btn-finc-save':{label:'<i class="ti ti-check"></i> Guardar',fn:addFixedIncome},
+    'btn-vinc-save':{label:'<i class="ti ti-check"></i> Registar',fn:addVarIncome},
+    'btn-ppr-save':{label:'<i class="ti ti-check"></i> Guardar',fn:addPPR},
+    'btn-inv-save':{label:'<i class="ti ti-check"></i> Guardar',fn:addInvestment}
+  };
+  Object.entries(saves).forEach(([id,{label,fn}])=>{const el=document.getElementById(id);if(el){el.innerHTML=label;el.onclick=fn;}});
+}
+function openEdit(type,id){
+  editingType=type;editingId=id;
+  const maps={account:state.accounts,'fixed-exp':state.fixedExpenses,'var-exp':state.varExpenses,'fixed-inc':state.fixedIncome,'var-inc':state.varIncome,ppr:state.pprs,inv:state.investments};
+  const item=(maps[type]||[]).find(i=>i.id===id);
+  if(!item)return;
+  const editLabel='<i class="ti ti-edit" style="margin-right:6px"></i>Editar';
+  if(type==='account'){
+    document.getElementById('acc-name').value=item.name;document.getElementById('acc-bank').value=item.bank||'';
+    document.getElementById('acc-balance').value=item.balance;document.getElementById('acc-type').value=item.type;
+    document.getElementById('modal-account-title').innerHTML=editLabel+' conta';
+    const btn=document.getElementById('btn-account-save');btn.innerHTML='<i class="ti ti-check"></i> Guardar';btn.onclick=saveEdit;
+    openModal('modal-account');
+  }else if(type==='fixed-exp'){
+    document.getElementById('fexp-name').value=item.name;document.getElementById('fexp-amount').value=item.amount;
+    document.getElementById('fexp-day').value=item.day;document.getElementById('fexp-cat').value=item.cat;
+    document.getElementById('modal-fexp-title').innerHTML=editLabel+' despesa fixa';
+    const btn=document.getElementById('btn-fexp-save');btn.innerHTML='<i class="ti ti-check"></i> Guardar';btn.onclick=saveEdit;
+    openModal('modal-fixed-exp');
+  }else if(type==='var-exp'){
+    document.getElementById('vexp-name').value=item.name;document.getElementById('vexp-amount').value=item.amount;
+    document.getElementById('vexp-month').value=item.month;document.getElementById('vexp-cat').value=item.cat;
+    document.getElementById('modal-vexp-title').innerHTML=editLabel+' despesa';
+    const btn=document.getElementById('btn-vexp-save');btn.innerHTML='<i class="ti ti-check"></i> Guardar';btn.onclick=saveEdit;
+    openModal('modal-var-exp');
+  }else if(type==='fixed-inc'){
+    document.getElementById('finc-name').value=item.name;document.getElementById('finc-amount').value=item.amount;
+    document.getElementById('finc-day').value=item.day;document.getElementById('finc-cat').value=item.cat;
+    document.getElementById('modal-finc-title').innerHTML=editLabel+' entrada fixa';
+    const btn=document.getElementById('btn-finc-save');btn.innerHTML='<i class="ti ti-check"></i> Guardar';btn.onclick=saveEdit;
+    openModal('modal-fixed-inc');
+  }else if(type==='var-inc'){
+    document.getElementById('vinc-name').value=item.name;document.getElementById('vinc-amount').value=item.amount;
+    document.getElementById('vinc-month').value=item.month;
+    document.getElementById('modal-vinc-title').innerHTML=editLabel+' entrada';
+    const btn=document.getElementById('btn-vinc-save');btn.innerHTML='<i class="ti ti-check"></i> Guardar';btn.onclick=saveEdit;
+    openModal('modal-var-inc');
+  }else if(type==='ppr'){
+    document.getElementById('ppr-name').value=item.name;document.getElementById('ppr-value').value=item.value;
+    document.getElementById('ppr-monthly').value=item.monthly||'';document.getElementById('ppr-year').value=item.year||'';
+    document.getElementById('ppr-type').value=item.type;
+    document.getElementById('modal-ppr-title').innerHTML=editLabel+' PPR';
+    const btn=document.getElementById('btn-ppr-save');btn.innerHTML='<i class="ti ti-check"></i> Guardar';btn.onclick=saveEdit;
+    openModal('modal-ppr');
+  }else if(type==='inv'){
+    document.getElementById('inv-name').value=item.name;document.getElementById('inv-value').value=item.value;
+    document.getElementById('inv-cost').value=item.cost||'';document.getElementById('inv-type').value=item.type;
+    document.getElementById('inv-platform').value=item.platform||'';
+    document.getElementById('modal-inv-title').innerHTML=editLabel+' investimento';
+    const btn=document.getElementById('btn-inv-save');btn.innerHTML='<i class="ti ti-check"></i> Guardar';btn.onclick=saveEdit;
+    openModal('modal-inv');
+  }
+}
+function saveEdit(){
+  const type=editingType,id=editingId;
+  if(!type||!id)return;
+  const maps={account:state.accounts,'fixed-exp':state.fixedExpenses,'var-exp':state.varExpenses,'fixed-inc':state.fixedIncome,'var-inc':state.varIncome,ppr:state.pprs,inv:state.investments};
+  const item=(maps[type]||[]).find(i=>i.id===id);
+  if(!item)return;
+  const getters={
+    account:()=>({name:document.getElementById('acc-name').value.trim(),bank:document.getElementById('acc-bank').value.trim(),balance:parseFloat(document.getElementById('acc-balance').value)||0,type:document.getElementById('acc-type').value}),
+    'fixed-exp':()=>({name:document.getElementById('fexp-name').value.trim(),amount:parseFloat(document.getElementById('fexp-amount').value)||0,cat:document.getElementById('fexp-cat').value,day:parseInt(document.getElementById('fexp-day').value)||1}),
+    'var-exp':()=>({name:document.getElementById('vexp-name').value.trim(),amount:parseFloat(document.getElementById('vexp-amount').value)||0,month:parseInt(document.getElementById('vexp-month').value),cat:document.getElementById('vexp-cat').value}),
+    'fixed-inc':()=>({name:document.getElementById('finc-name').value.trim(),amount:parseFloat(document.getElementById('finc-amount').value)||0,cat:document.getElementById('finc-cat').value,day:parseInt(document.getElementById('finc-day').value)||25}),
+    'var-inc':()=>({name:document.getElementById('vinc-name').value.trim(),amount:parseFloat(document.getElementById('vinc-amount').value)||0,month:parseInt(document.getElementById('vinc-month').value)}),
+    ppr:()=>({name:document.getElementById('ppr-name').value.trim(),value:parseFloat(document.getElementById('ppr-value').value)||0,monthly:parseFloat(document.getElementById('ppr-monthly').value)||0,year:parseInt(document.getElementById('ppr-year').value)||null,type:document.getElementById('ppr-type').value}),
+    inv:()=>({name:document.getElementById('inv-name').value.trim(),value:parseFloat(document.getElementById('inv-value').value)||0,cost:parseFloat(document.getElementById('inv-cost').value)||0,type:document.getElementById('inv-type').value,platform:document.getElementById('inv-platform').value.trim()})
+  };
+  const data=getters[type]();
+  const check=data.name&&(data.amount||data.balance||data.value);
+  if(!check){toast('Preencha os campos obrigatórios');return;}
+  Object.assign(item,data);
+  const modalMap={account:'modal-account','fixed-exp':'modal-fixed-exp','var-exp':'modal-var-exp','fixed-inc':'modal-fixed-inc','var-inc':'modal-var-inc',ppr:'modal-ppr',inv:'modal-inv'};
+  const renderMap={account:renderAccounts,'fixed-exp':renderExpenses,'var-exp':renderExpenses,'fixed-inc':renderIncomePage,'var-inc':renderIncomePage,ppr:renderInvestments,inv:renderInvestments};
+  saveState();closeModal(modalMap[type]);resetEditState();(renderMap[type])();toast('Guardado ✓');
+}
+
+// INIT
+renderDashboard();
+</script>
+
+
+
+
+
+
+
+
+<script>
+if('serviceWorker' in navigator){
+  const swCode = `const CACHE='fp-v1';
+const ASSETS=['./'];
+self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting()));});
+self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));});
+self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)));});`;
+  const blob = new Blob([swCode], {type:'application/javascript'});
+  const swUrl = URL.createObjectURL(blob);
+  navigator.serviceWorker.register(swUrl, {scope: './'
+  }).then(r=>console.log('SW ok')).catch(e=>console.log('SW err',e));
+}
+</script>
+</body>
+</html>
